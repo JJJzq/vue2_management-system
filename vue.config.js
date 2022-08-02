@@ -5,6 +5,8 @@ module.exports = defineConfig({
   transpileDependencies: true,
   lintOnSave: false,
   devServer: {
+    historyApiFallback: true,
+    allowedHosts: "all",
     host: '0.0.0.0',
     // https:true,
     port: 6103,
