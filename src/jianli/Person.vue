@@ -20,7 +20,7 @@
     </div> -->
     <!-- 用户信息部分__左侧 -->
     <div>
-      <el-row class="home" :gutter="20">
+      <el-row class="home" :gutter="15">
         <el-col :span="8" style="margin-top:20px">
           <el-card class="user" shadow="hover">
             <div class="user_top">

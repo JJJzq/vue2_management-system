@@ -15,7 +15,7 @@
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>个人中心</el-dropdown-item>
-            <el-dropdown-item>退出</el-dropdown-item>
+            <el-dropdown-item @click.native="loginOut">退出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -34,6 +34,13 @@ export default {
       // 照片
       userImg: require("../assets/logo.png")
     };
+  },
+  methods: {
+    loginOut() {
+      // console.log("退出账号");
+      alert("退出账号");
+      this.$router.push({ name: "denglu" });
+    }
   }
 };
 </script>

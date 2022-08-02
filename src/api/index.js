@@ -53,7 +53,47 @@ app.post('/Login', (req, res) => {
     })
 })
 
-
+//注册
+app.post('/register', (req, res) => {
+    let body = req.body
+    console.log('注册', body)
+    // console.log('调用登录接口');
+    var connet = connectionObj()
+    const sql1 = 'SELECT * FROM user_table where user = ?'  //查询是否已有账号
+    const sql2 = `INSERT INTO user_table (user,password) VALUES('${body.ua}','${body.up}')` //注册新账号
+    connet.query(sql1, [body.ua], (err, result) => {
+        if (err) {
+            console.log('error', err);
+            res.send({
+                status: 400,
+                message: '注册失败'
+            })
+        } else {
+            if (result.length) {
+                res.send({
+                    status: 300,
+                    message: '账号已存在'
+                })
+            } else {
+                connet.query(sql2, [body.ua, body.up], (err, result) => {
+                    if (err) {
+                        console.log('error', err);
+                        res.send({
+                            status: 400,
+                            message: '注册失败'
+                        })
+                    } else {
+                        res.send({
+                            status: 200,
+                            data: result,
+                            message: '注册成功'
+                        })
+                    }
+                })
+            }
+        }
+    })
+})
 
 
 //用户列表-----获取用户信息

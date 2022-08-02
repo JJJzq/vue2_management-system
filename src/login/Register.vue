@@ -2,7 +2,7 @@
   <div class="loginbody">
     <div class="login">
       <div class="mylogin" align="center">
-        <h4>登录</h4>
+        <h4>注册账号</h4>
         <el-form :model="loginForm" :rules="loginRules" ref="loginForm" label-width="0px">
           <el-form-item label prop="account" style="margin-top:10px;">
             <el-row>
@@ -29,13 +29,29 @@
               </el-col>
             </el-row>
           </el-form-item>
+          <el-form-item label prop="passWord">
+            <el-row>
+              <el-col :span="2">
+                <span class="el-icon-lock"></span>
+              </el-col>
+              <el-col :span="22">
+                <el-input
+                  class="inps"
+                  type="password"
+                  placeholder="再次确认密码"
+                  v-model="loginForm.confirm"
+                ></el-input>
+              </el-col>
+            </el-row>
+          </el-form-item>
           <el-form-item style="margin-top:55px;">
-            <el-button type="primary" round class="submitBtn" @click="submitForm">登录</el-button>
+            <el-button type="primary" round class="submitBtn" @click="submitForm">注册</el-button>
           </el-form-item>
           <div class="unlogin">
             <router-link :to="{ path: '/forgetpwd'}">忘记密码?</router-link>|
-            <router-link :to="{path: '/register'}">
-              <a href="register.vue" target="_blank" align="right">注册新账号</a>
+            <router-link :to="{path: '/'}">
+              <!-- <a href="register.vue" target="_blank" align="right">登录账号</a> -->
+              <a href="Login.vue" target="_blank" align="right">登录账号</a>
             </router-link>
           </div>
         </el-form>
@@ -45,7 +61,6 @@
 </template>
 
 <script>
-// import { mapMutations } from "vuex";
 import axios from "axios";
 
 export default {
@@ -53,33 +68,46 @@ export default {
     return {
       loginForm: {
         account: "",
-        passWord: ""
+        passWord: "",
+        confirm: ""
       },
       loginRules: {
         account: [{ required: true, message: "请输入账号", trigger: "blur" }],
-        passWord: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        passWord: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        confirm: [
+          { required: true, message: "重新输入,确认密码", trigger: "blur" }
+        ]
       }
     };
   },
   methods: {
-    //提交登录
+    //提交注册
     submitForm() {
       let that = this;
       const userAccount = this.loginForm.account;
       const userPassword = this.loginForm.passWord;
-      console.log("登录！账号，密码", userAccount, userPassword);
+      const confirmPW = this.loginForm.confirm;
+      console.log("注册！账号，密码", userAccount, userPassword);
       if (userAccount == "" || userPassword == "") {
         alert("请输入账号和密码");
+        return;
+      }
+      if (userPassword !== confirmPW) {
+        alert("密码输入不一致");
       } else {
         axios
-          .post("/api/Login", { ua: userAccount, up: userPassword })
+          .post("/api/register", { ua: userAccount, up: userPassword })
           .then(res => {
-            console.log("登录结果", res.data);
-            if (res.data.status == 200) {
-              sessionStorage.setItem("flag", 1);
-              that.$router.push({ name: "shouye" });
-            } else {
-              alert("用户名或密码错误,请重新输入");
+            console.log("注册结果", res.data);
+            if (res.data.status === 400) {
+              alert("注册失败！");
+            }
+            if (res.data.status === 300) {
+              alert("账号已存在！");
+            }
+            if (res.data.status === 200) {
+              alert("注册成功");
+              that.$router.push({ name: "denglu" });
             }
           });
       }
@@ -113,7 +141,7 @@ export default {
 
 .mylogin {
   width: 240px;
-  height: 280px;
+  height: 370px;
   position: absolute;
   top: 0;
   left: 0;

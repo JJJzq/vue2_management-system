@@ -27,9 +27,9 @@ export default {
     position: fixed;
     top: -25px;
     bottom: 0;
-    left:0;
+    left: 0;
     right: 0;
-    
+
     margin-left: 0px;
     margin-top: 0px;
     // padding-top: -100px;
