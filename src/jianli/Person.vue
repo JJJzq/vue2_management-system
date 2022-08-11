@@ -17,7 +17,7 @@
           </el-dropdown-menu>
         </el-dropdown>
       </div>
-    </div> -->
+    </div>-->
     <!-- 用户信息部分__左侧 -->
     <div>
       <el-row class="home" :gutter="15">
@@ -50,7 +50,10 @@
               <el-table-column v-for="(lab,key) in table_lab" :key="key" :label="lab" :prop="key"></el-table-column>
             </el-table>
           </el-card>
+          <!-- todo -->
+          <Todo style="margin-top:10px;"></Todo>
         </el-col>
+
         <!-- 用户信息部分__右侧 -->
         <el-col :span="16" style="margin-top:20px">
           <div class="num">
@@ -85,7 +88,10 @@
             </el-card>
             <el-card style="width:425px;height:210px;margin-top:20px">
               <!-- <PieChart style="width:auto;height:230px;padding-top:0px;"></PieChart> -->
-              <Echarts :chartData="echartData.CCCData" style="width:auto;height:230px;padding-top:0px;"></Echarts>
+              <Echarts
+                :chartData="echartData.CCCData"
+                style="width:auto;height:230px;padding-top:0px;"
+              ></Echarts>
             </el-card>
           </div>
         </el-col>
@@ -99,6 +105,7 @@
 // import LineChart from "@/echarts/LineChart.vue";
 // import PieChart from "@/echarts/PieChart.vue";
 import Echarts from "@/echarts/Echarts.vue";
+import Todo from "@/components/Todo.vue";
 
 export default {
   data() {
@@ -201,7 +208,7 @@ export default {
         }
       ],
       aDate: ["22/1", "22/2", "22/3"],
-      
+
       //饼图数据
       CData: [
         {
@@ -216,7 +223,7 @@ export default {
           name: "c",
           value: 300
         }
-      ], 
+      ],
 
       // Echarts图表数据
       echartData: {
@@ -274,8 +281,6 @@ export default {
       }
     ];
 
-
-
     // 折线图数据
     const keyArry = Object.keys(this.aData[0]);
     //   console.log(keyArry);
@@ -292,16 +297,14 @@ export default {
     this.echartData.BBBData.xData = date;
     this.echartData.BBBData.series = series;
 
-
-
     //饼图
     this.echartData.CCCData.series = {
-            type: "pie",
-            data: this.CData,
-            // radius: "60%"
-          };
+      type: "pie",
+      data: this.CData
+      // radius: "60%"
+    };
   },
-  components: { Echarts }
+  components: { Echarts, Todo }
 };
 </script>
 

@@ -7,6 +7,7 @@ import Person from '../jianli/Person'
 import Login from '../login/Login'
 import Home from '../pages/Index'
 import Register from '../login/Register'
+import UploadImg from '../components/UploadImg'
 
 const router = new VueRouter({
     mode: 'history',
@@ -44,11 +45,11 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    name: 'quanxianguanli',
-                    path: '/quanxian',
-                    component: Quanx,
+                    name: 'shangchuantupian',
+                    path: '/uploadImg',
+                    component: UploadImg,
                     meta: {
-                        title: '权限管理'
+                        title: '上传图片'
                     }
                 },
                 {

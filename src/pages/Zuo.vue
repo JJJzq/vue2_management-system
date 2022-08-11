@@ -7,7 +7,7 @@
     <!-- <el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
       <el-radio-button :label="false">展开</el-radio-button>
       <el-radio-button :label="true">收起</el-radio-button>
-    </el-radio-group> -->
+    </el-radio-group>-->
     <el-menu
       default-active="/"
       class="el-menu-vertical-demo"
@@ -32,9 +32,9 @@
         </el-menu-item-group>
       </el-submenu>
 
-      <el-menu-item index="/quanxian">
+      <el-menu-item index="/uploadImg">
         <i class="el-icon-menu"></i>
-        <span>权限管理</span>
+        <span>上传图片</span>
       </el-menu-item>
     </el-menu>
   </div>
