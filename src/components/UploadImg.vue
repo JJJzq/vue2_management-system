@@ -1,65 +1,89 @@
 <template>
-  <el-upload
-    class="avatar-uploader"
-    action="https://jsonplaceholder.typicode.com/posts/"
-    :show-file-list="false"
-    :on-success="handleAvatarSuccess"
-    :before-upload="beforeAvatarUpload"
-  >
-    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-  </el-upload>
+  <div>
+    <input type="file" id="file" ref="file" />
+    <button @click="upload">上传图片</button>
+    <button @click="download" download>下载图片</button>
+    <a href="api/downLoadImg" download>下载</a>
+    <button @click="showImg">显示图片</button>
+    <img :src="imgUrl" />
+  </div>
 </template>
 
 <script>
+import axios from "axios";
+
+import { v4 as uuidv4 } from "uuid";
+
 export default {
   data() {
     return {
-      imageUrl: ""
+      imgUrl: ""
     };
   },
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
-      console.log(this.imageUrl);
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
+    upload() {
+      let file = document.getElementById("file").files[0];
+      //创建空的formData对象
+      let formdata = new FormData();
+      formdata.append("file", file);
+      // console.log("@@@", formdata.get("file"));
 
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isJPG && isLt2M;
+      axios
+        .post("api/upLoadImg", formdata, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(res => {
+          console.log("@@@", res);
+        });
+
+      // axios({
+      //   url: "api/upLoadImg",
+      //   method: "POST",
+      //   data: {
+      //     id: uuidv4().slice(0, 7),
+      //     filename: filename,
+      //     formdata: formdata
+      //   },
+      //   headers: { "Content-Type": "application/json" }
+      // }).then(res => {
+      //   console.log("@@@", res);
+      // });
+    },
+    download() {
+      // axios.get("api/downLoadImg").then(res => {
+      //   console.log(res);
+      // });
+    },
+    showImg() {
+      axios({
+        url: "api/getImg",
+        method: "get",
+        responseType: "blob",
+        params: {
+          id: "942611522"
+        }
+      }).then(res => {
+        console.log(res.data);
+        // let blob = new Blob([res], {
+        //   type: "image/jpeg"
+        // });
+        // console.log('!!!',blob)
+        // let src = URL.createObjectURL(blob);
+        // console.log(src);
+        // this.imgUrl = src;
+
+        let wj = new FormData();
+        wj.append("file", res.data);
+        console.log("@@@", wj.get("file"));
+        let src = URL.createObjectURL(wj.get("file"));
+        console.log(src);
+        this.imgUrl = src;
+      });
     }
   }
 };
 </script>
 <style>
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
 </style>

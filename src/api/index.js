@@ -1,11 +1,18 @@
 //搭建express服务
 const express = require('express')
+
 var mysql = require('mysql')
+
 var bodyParser = require('body-parser')
 
 
 const app = express()
+
 app.use(bodyParser.json())
+
+
+app.use('/img/', express.static('static/images/'))
+// app.use('/img/', express.static('./public/'))
 
 //数据库配置
 function connectionObj() {
@@ -185,6 +192,142 @@ app.get('/changeUI', (req, res) => {
 
 })
 
+
+//引入配置好的multerConfig
+const multerConfig = require('./multerConfig');
+const multerConfig1 = require('./multerConfig1');
+//定义静态变量
+// const fileName = "file"  // 上传的 fileName 名称
+const updateBaseUrl = "http://localhost:8888" // 上传到服务器地址
+const imgPath = "/img/images/" // 上传到服务器的虚拟目录
+
+// 上传图片文件
+function uploadImgfile(req, res) {
+    return new Promise((resolve, reject) => {
+        multerConfig.single("file")(req, res, function (err) {
+            if (err) {
+                reject(err)
+            } else {
+                // console.log('!!!', req.file)
+                // `req.file.filename`  请求文件名称后缀 
+                // `updateBaseUrl + imgPath + req.file.filename` 完整的服务器虚拟目录
+                // resolve(updateBaseUrl + imgPath + req.file.filename)
+                resolve(req.file)
+            }
+        });
+    })
+}
+// 上传图片地址
+function uploadImgSrc(req, res) {
+    return new Promise((resolve, reject) => {
+        multerConfig1.single("file")(req, res, function (err) {
+            if (err) {
+                reject(err)
+            } else {
+                // console.log('!!!', req.file)
+                // `req.file.filename`  请求文件名称后缀 
+                // `updateBaseUrl + imgPath + req.file.filename` 完整的服务器虚拟目录
+                resolve(updateBaseUrl + imgPath + req.file.filename)
+                // resolve(req.file)
+            }
+        });
+    })
+}
+
+
+// 上传图片
+app.post('/upLoadImg', (req, res) => {
+    // 生成随机数id
+    let id = '';
+    for (var i = 0; i < 9; i++) {
+        id += Math.floor(Math.random() * 10);
+    }
+
+    var connet = connectionObj()
+    uploadImgfile(req, res).then(imgFile => {
+        console.log('@', imgFile)
+        if (imgFile === undefined) {
+            console.log('上传失败')
+            res.send({
+                state: 400,
+                message: '上传失败'
+            })
+        } else {
+            const sql = `insert into images (id,filename,content) values (?,?,?) `
+            connet.query(sql, [id, imgFile.originalname, imgFile.buffer], (err, result) => {
+                if (err) {
+                    console.log('上传失败', err)
+                    res.send({
+                        state: 400,
+                        message: '上传失败'
+                    })
+                } else {
+                    console.log('上传成功', result)
+                    res.send({
+                        state: 200,
+                        message: '上传成功',
+                        data: imgFile
+                    })
+                }
+            })
+            connet.end()
+        }
+    })
+
+
+})
+
+// 下载图片
+app.get('/downLoadImg', (req, res) => {
+    var connet = connectionObj()
+    const sql = `select * from images`
+    connet.query(sql, (err, result) => {
+        console.log('!!!', result)
+        if (err) {
+            console.log('下载失败', err)
+            res.send({
+                state: 400,
+                message: '下载失败',
+                err: err.message
+            })
+        } else {
+            console.log('下载成功', result)
+            res.set({
+                'Content-Type': 'image/jpeg',
+                'Accept-Ranges': 'bytes',
+                'Content-Disposition': 'attachment;filename="filename.jpg"'
+            })
+            res.send(
+                result[7].content
+            )
+        }
+    })
+    connet.end()
+})
+
+
+// 获取图片
+app.get('/getImg', (req, res) => {
+    console.log('!!!', req.query.id)
+
+    var connet = connectionObj()
+    const sql = `select content from images where id = '${req.query.id}'`
+    connet.query(sql, (err, result) => {
+        if (err) {
+            res.send({
+                status: 400,
+                msg: '失败',
+                message: err.message
+            })
+        } else {
+            
+            console.log('查询结果', result)
+            res.send({
+                result
+            })
+        }
+    })
+})
 
 
 
